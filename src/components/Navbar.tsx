@@ -17,6 +17,10 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
+  // Home page has a dark hero — navbar text stays light at top.
+  // All other pages have a light background — navbar needs dark text at top.
+  const isDarkHero = location.pathname === '/';
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', onScroll);
@@ -27,19 +31,25 @@ export function Navbar() {
     setMenuOpen(false);
   }, [location.pathname]);
 
+  const dark = scrolled || !isDarkHero;
+
   return (
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-smooth-out ${
           scrolled
             ? 'bg-mh-black/90 backdrop-blur-md py-4'
-            : 'bg-transparent py-6'
+            : isDarkHero
+            ? 'bg-transparent py-6'
+            : 'bg-ivory/80 backdrop-blur-md py-4'
         }`}
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-10">
           <Link
             to="/"
-            className="font-display text-xl font-extrabold tracking-editorial text-ivory transition-opacity hover:opacity-80"
+            className={`font-display text-xl font-extrabold tracking-editorial transition-opacity hover:opacity-80 ${
+              dark ? 'text-mh-black' : 'text-ivory'
+            }`}
           >
             {brand.name}
           </Link>
@@ -53,6 +63,8 @@ export function Navbar() {
                   `text-sm font-medium tracking-wide-sm uppercase transition-colors duration-300 ${
                     isActive
                       ? 'text-accent'
+                      : dark
+                      ? 'text-mh-black/70 hover:text-mh-black'
                       : 'text-ivory/80 hover:text-ivory'
                   }`
                 }
@@ -70,7 +82,7 @@ export function Navbar() {
 
           <button
             onClick={() => setMenuOpen(true)}
-            className="text-ivory lg:hidden"
+            className={`lg:hidden ${dark ? 'text-mh-black' : 'text-ivory'}`}
             aria-label="Open menu"
           >
             <Menu size={24} />
